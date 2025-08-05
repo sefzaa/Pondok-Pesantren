@@ -24,11 +24,11 @@ const menuItems = [
       { name: 'Dashboard', icon: FiHome, href: '/wali-kamar' },
       { name: 'Absensi', icon: FiUserCheck, href: '/wali-kamar/absensi' },
       { name: 'Tahfidz', icon: FiBookOpen, href: '/wali-kamar/tahfidz' },
+      { name: 'Hafalan', icon: FiBookOpen, href: '/wali-kamar/hafalan' },
+      { name: 'Perizinan', icon: FiSend, href: '/wali-kamar/perizinan' },
       { name: 'Prestasi', icon: FiAward, href: '/wali-kamar/prestasi' },
       { name: 'Pelanggaran', icon: FiAlertTriangle, href: '/wali-kamar/pelanggaran' },
-      { name: 'Perizinan', icon: FiSend, href: '/wali-kamar/perizinan' },
       { name: 'Rekap', icon: FiFileText, href: '/wali-kamar/rekap' },
-      { name: 'Hafalan', icon: FiBookOpen, href: '/wali-kamar/hafalan' },
     ],
   },
 ];
