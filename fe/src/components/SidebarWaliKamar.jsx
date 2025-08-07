@@ -44,9 +44,11 @@ export default function SidebarWaliKamar({ setSidebarOpen }) {
   };
 
   return (
-    <aside className="bg-white w-64 min-h-screen flex flex-col border-r">
+    // ▼▼▼ PERUBAHAN 1: Hapus `border-r` dan sesuaikan w/h agar fleksibel ▼▼▼
+    <aside className="bg-white w-full h-full flex flex-col">
       {/* Header Sidebar dengan Profil Pengguna */}
-      <div className="p-4 border-b">
+      {/* ▼▼▼ PERUBAHAN 2: Ganti `border-b` dengan `shadow-sm` ▼▼▼ */}
+      <div className="p-4 shadow-sm">
         <Menu as="div" className="relative">
           <Menu.Button className="w-full flex items-center gap-3 text-left p-2 rounded-lg hover:bg-gray-100 transition-colors">
             <img 
@@ -61,16 +63,17 @@ export default function SidebarWaliKamar({ setSidebarOpen }) {
             </div>
           </Menu.Button>
           <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
-            <Menu.Items className="absolute z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div className="py-1">
-                    <Menu.Item>
-                        {({ active }) => (
-                            <button onClick={() => console.log('Logout clicked!')} className={clsx('w-full text-left flex items-center gap-3 px-4 py-2 text-sm', active ? 'bg-red-100 text-red-700' : 'text-red-600' )}>
-                                <FiLogOut /> Logout
-                            </button>
-                        )}
-                    </Menu.Item>
-                </div>
+            {/* ▼▼▼ PERUBAHAN 3: Hapus `ring-1 ring-black ring-opacity-5` ▼▼▼ */}
+            <Menu.Items className="absolute z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg focus:outline-none">
+              <div className="py-1">
+                <Menu.Item>
+                  {({ active }) => (
+                    <button onClick={() => console.log('Logout clicked!')} className={clsx('w-full text-left flex items-center gap-3 px-4 py-2 text-sm', active ? 'bg-red-100 text-red-700' : 'text-red-600' )}>
+                      <FiLogOut /> Logout
+                    </button>
+                  )}
+                </Menu.Item>
+              </div>
             </Menu.Items>
           </Transition>
         </Menu>
