@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { Menu, Transition } from '@headlessui/react';
-import { 
-  FiHome, 
+import {
+  FiHome,
   FiDollarSign,
   FiLogOut
 } from 'react-icons/fi';
@@ -33,12 +33,12 @@ export default function SidebarAdminAdm({ setSidebarOpen }) {
   };
 
   return (
-    <aside className="bg-white w-64 min-h-screen flex flex-col border-r">
+    <aside className="bg-white w-64 min-h-screen flex flex-col shadow-md"> {/* Menambahkan shadow-md di sidebar */}
       {/* Header Sidebar dengan Profil Pengguna */}
-      <div className="p-4 border-b">
+      <div className="p-4"> {/* Menghilangkan border-b */}
         <Menu as="div" className="relative">
           <Menu.Button className="w-full flex items-center gap-3 text-left p-2 rounded-lg hover:bg-gray-100 transition-colors">
-            <img 
+            <img
               src="https://images.unsplash.com/photo-163333275S5192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80"
               alt="User avatar"
               className="h-10 w-10 rounded-full object-cover"
@@ -49,16 +49,16 @@ export default function SidebarAdminAdm({ setSidebarOpen }) {
             </div>
           </Menu.Button>
           <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
-            <Menu.Items className="absolute z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div className="py-1">
-                    <Menu.Item>
-                        {({ active }) => (
-                            <button onClick={() => console.log('Logout clicked!')} className={clsx('w-full text-left flex items-center gap-3 px-4 py-2 text-sm', active ? 'bg-red-100 text-red-700' : 'text-red-600' )}>
-                                <FiLogOut /> Logout
-                            </button>
-                        )}
-                    </Menu.Item>
-                </div>
+            <Menu.Items className="absolute z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"> {/* Menambahkan shadow-lg di dropdown */}
+              <div className="py-1">
+                <Menu.Item>
+                  {({ active }) => (
+                    <button onClick={() => console.log('Logout clicked!')} className={clsx('w-full text-left flex items-center gap-3 px-4 py-2 text-sm', active ? 'bg-red-100 text-red-700' : 'text-red-600' )}>
+                      <FiLogOut /> Logout
+                    </button>
+                  )}
+                </Menu.Item>
+              </div>
             </Menu.Items>
           </Transition>
         </Menu>

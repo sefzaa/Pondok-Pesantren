@@ -25,7 +25,7 @@ export default function AdminAdmLayout({ children }) {
       {/* Sidebar Mobile */}
       <Transition.Root show={sidebarOpen} as={Fragment}>
         <Dialog as="div" className="relative z-40 lg:hidden" onClose={setSidebarOpen}>
-            <Transition.Child as={Fragment} enter="transition-opacity ease-linear duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="transition-opacity ease-linear duration-300" leaveFrom="opacity-100" leaveTo="opacity-0"><div className="fixed inset-0 bg-gray-600 bg-opacity-75" /></Transition.Child>
+            <Transition.Child as={Fragment} enter="transition-opacity ease-linear duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="transition-opacity ease-linear duration-300" leaveFrom="opacity-100" leaveTo="opacity-0"><div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm" /></Transition.Child>
             <div className="fixed inset-0 flex z-40">
                 <Transition.Child as={Fragment} enter="transition ease-in-out duration-300 transform" enterFrom="-translate-x-full" enterTo="translate-x-0" leave="transition ease-in-out duration-300 transform" leaveFrom="translate-x-0" leaveTo="-translate-x-full">
                     <Dialog.Panel className="relative flex-1 flex flex-col max-w-xs w-full">
@@ -46,8 +46,10 @@ export default function AdminAdmLayout({ children }) {
       </div>
 
       <div className="lg:pl-64 flex flex-col flex-1">
-        <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b items-center justify-between px-4 sm:px-6 lg:px-8">
-          <button type="button" className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden" onClick={() => setSidebarOpen(true)}>
+        {/* ▼▼▼ PERUBAHAN ADA DI BARIS INI ▼▼▼ */}
+        <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow-sm items-center justify-between px-4 sm:px-6 lg:px-8">
+          {/* Tombol menu mobile (garis pembatas dihilangkan) */}
+          <button type="button" className="px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden" onClick={() => setSidebarOpen(true)}>
             <span className="sr-only">Open sidebar</span>
             <FiMenu className="h-6 w-6" aria-hidden="true" />
           </button>
