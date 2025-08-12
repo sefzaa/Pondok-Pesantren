@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { FiPlus, FiEdit, FiTrash2, FiAward, FiFlag, FiTrendingUp, FiX, FiAlertTriangle } from 'react-icons/fi';
+
+// URL backend dari environment variable
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 // Objek untuk memetakan nama ikon (string) ke komponen ikon
 const iconMap = {
@@ -15,7 +18,6 @@ const iconMap = {
 const formatDate = (dateString) => {
   if (!dateString) return '';
   const date = new Date(dateString);
-  // Tambahkan offset zona waktu untuk mencegah tanggal mundur satu hari
   const userTimezoneOffset = date.getTimezoneOffset() * 60000;
   const correctedDate = new Date(date.getTime() + userTimezoneOffset);
   
@@ -27,108 +29,110 @@ const formatDate = (dateString) => {
   }).format(correctedDate);
 };
 
-
-// Data awal dengan struktur yang disesuaikan
-const initialKegiatanData = [
-  {
-    id: 1,
-    name: 'Seminar Kepemimpinan',
-    date: '2025-08-19', // Menggunakan format YYYY-MM-DD
-    icon: 'FiAward',
-    iconBg: 'bg-cyan-100',
-    iconColor: 'text-cyan-600',
-  },
-  {
-    id: 2,
-    name: 'Upacara Hari Santri',
-    date: '2025-08-20',
-    icon: 'FiFlag',
-    iconBg: 'bg-blue-100',
-    iconColor: 'text-blue-600',
-  },
-  {
-    id: 3,
-    name: 'Seminar Kewirausahaan',
-    date: '2025-08-21',
-    icon: 'FiTrendingUp',
-    iconBg: 'bg-pink-100',
-    iconColor: 'text-pink-600',
-  },
-];
-
 export default function KegiatanTambahanPage() {
-  const [kegiatanItems, setKegiatanItems] = useState(initialKegiatanData);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [kegiatanItems, setKegiatanItems] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const defaultNewItem = { name: '', date: '' };
-  const [currentItem, setCurrentItem] = useState(null);
+  const [currentItem, setCurrentItem] = useState(defaultNewItem);
   const [itemToDelete, setItemToDelete] = useState(null);
 
-  function openAddModal() {
-    setCurrentItem(defaultNewItem);
-    setIsAddModalOpen(true);
-  }
-  function closeAddModal() { setIsAddModalOpen(false); }
-
-  function openEditModal(item) {
-    setCurrentItem(item);
-    setIsEditModalOpen(true);
-  }
-  function closeEditModal() { setIsEditModalOpen(false); }
-
-  function openDeleteModal(item) {
-    setItemToDelete(item);
-    setIsDeleteModalOpen(true);
-  }
-  function closeDeleteModal() {
-    setItemToDelete(null);
-    setIsDeleteModalOpen(false);
-  }
-
-  function handleAddItem(e) {
-    e.preventDefault();
-    if (currentItem.name && currentItem.date) {
-      setKegiatanItems([
-        ...kegiatanItems,
-        {
-          ...currentItem,
-          id: Date.now(),
-          icon: 'FiAward',
-          iconBg: 'bg-gray-100',
-          iconColor: 'text-gray-600',
-        },
-      ]);
-      closeAddModal();
+  // Fungsi untuk mengambil data dari API
+  const fetchKegiatan = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/api/kegiatan-tambahan`);
+      if (!response.ok) throw new Error('Gagal mengambil data');
+      const data = await response.json();
+      // Ganti nama field dari backend (nama, id_kegiatan) ke frontend (name, id)
+      const formattedData = data.map(item => ({
+        ...item,
+        id: item.id_kegiatan,
+        name: item.nama,
+        date: item.tanggal.split('T')[0] // Ambil bagian tanggal saja
+      }));
+      setKegiatanItems(formattedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
-  }
+  };
 
-  function handleUpdateItem(e) {
-    e.preventDefault();
-    if (currentItem) {
-      setKegiatanItems(
-        kegiatanItems.map((item) =>
-          item.id === currentItem.id ? currentItem : item
-        )
-      );
-      closeEditModal();
+  // Panggil fetchKegiatan saat komponen pertama kali dimuat
+  useEffect(() => {
+    fetchKegiatan();
+  }, []);
+
+  const openModal = (item = null) => {
+    if (item) {
+      setIsEditing(true);
+      setCurrentItem({ ...item });
+    } else {
+      setIsEditing(false);
+      setCurrentItem(defaultNewItem);
     }
-  }
+    setIsModalOpen(true);
+  };
+  const closeModal = () => setIsModalOpen(false);
 
-  function handleDeleteItem() {
+  const openDeleteModal = (item) => { setItemToDelete(item); setIsDeleteModalOpen(true); };
+  const closeDeleteModal = () => { setItemToDelete(null); setIsDeleteModalOpen(false); };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+        name: currentItem.name,
+        date: currentItem.date,
+        // Anda bisa menambahkan field icon dll di sini jika perlu
+    };
+
+    const url = isEditing 
+      ? `${backendUrl}/api/kegiatan-tambahan/${currentItem.id}`
+      : `${backendUrl}/api/kegiatan-tambahan/create`;
+      
+    const method = isEditing ? 'PUT' : 'POST';
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error(`Gagal ${isEditing ? 'memperbarui' : 'menambah'} data`);
+        
+        // Refresh data dari server untuk mendapatkan list terbaru
+        fetchKegiatan();
+
+    } catch (error) {
+        console.error(`Error submitting form:`, error);
+    } finally {
+        closeModal();
+    }
+  };
+
+  const handleDeleteItem = async () => {
     if (itemToDelete) {
-      setKegiatanItems(
-        kegiatanItems.filter((item) => item.id !== itemToDelete.id)
-      );
-      closeDeleteModal();
+      try {
+        const response = await fetch(`${backendUrl}/api/kegiatan-tambahan/${itemToDelete.id}`, {
+          method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Gagal menghapus data');
+        
+        // Hapus item dari state tanpa perlu fetch ulang
+        setKegiatanItems(kegiatanItems.filter(item => item.id !== itemToDelete.id));
+
+      } catch (error) {
+        console.error("Error deleting item:", error);
+      } finally {
+        closeDeleteModal();
+      }
     }
-  }
+  };
 
   return (
     <div>
       <div className="flex justify-start mb-6">
-        <button onClick={openAddModal} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button onClick={() => openModal()} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           <FiPlus size={20} />
           <span>Kegiatan</span>
         </button>
@@ -140,8 +144,8 @@ export default function KegiatanTambahanPage() {
           return (
             <div key={kegiatan.id} className="bg-white p-4 rounded-lg shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-full ${kegiatan.iconBg}`}>
-                  <IconComponent className={`h-6 w-6 ${kegiatan.iconColor}`} />
+                <div className={`p-3 rounded-full ${kegiatan.iconBg || 'bg-gray-100'}`}>
+                  <IconComponent className={`h-6 w-6 ${kegiatan.iconColor || 'text-gray-600'}`} />
                 </div>
                 <div>
                   <p className="font-semibold text-gray-800">{kegiatan.name}</p>
@@ -149,7 +153,7 @@ export default function KegiatanTambahanPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3 self-end sm:self-center">
-                <button onClick={() => openEditModal(kegiatan)} className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-400 text-white text-sm rounded-md hover:bg-yellow-500 transition-colors">
+                <button onClick={() => openModal(kegiatan)} className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-400 text-white text-sm rounded-md hover:bg-yellow-500 transition-colors">
                   <FiEdit size={14} />
                   <span>Edit</span>
                 </button>
@@ -164,8 +168,8 @@ export default function KegiatanTambahanPage() {
       </div>
 
       {/* Modal untuk Tambah dan Edit */}
-      <Transition appear show={isAddModalOpen || isEditModalOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={isAddModalOpen ? closeAddModal : closeEditModal}>
+      <Transition appear show={isModalOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
           </Transition.Child>
@@ -174,7 +178,7 @@ export default function KegiatanTambahanPage() {
               <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enterTo="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 translate-y-0 sm:scale-100" leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md sm:p-6">
                   <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
-                    <button type="button" className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" onClick={isAddModalOpen ? closeAddModal : closeEditModal}>
+                    <button type="button" className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" onClick={closeModal}>
                       <span className="sr-only">Close</span>
                       <FiX className="h-6 w-6" aria-hidden="true" />
                     </button>
@@ -182,11 +186,11 @@ export default function KegiatanTambahanPage() {
                   <div className="sm:flex sm:items-start">
                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
                       <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                        {isAddModalOpen ? 'Tambah Kegiatan Tambahan' : 'Edit Kegiatan Tambahan'}
+                        {isEditing ? 'Edit Kegiatan Tambahan' : 'Tambah Kegiatan Tambahan'}
                       </Dialog.Title>
                       <div className="mt-4">
                         {currentItem && (
-                          <form onSubmit={isAddModalOpen ? handleAddItem : handleUpdateItem} className="space-y-4">
+                          <form onSubmit={handleFormSubmit} className="space-y-4">
                             <div>
                               <label htmlFor="kegiatanName" className="block text-sm font-medium text-gray-700">Nama Kegiatan</label>
                               <input type="text" id="kegiatanName" name="kegiatanName" value={currentItem.name} onChange={(e) => setCurrentItem({ ...currentItem, name: e.target.value })} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900" placeholder="Contoh: Lomba Cerdas Cermat" required />
@@ -197,9 +201,9 @@ export default function KegiatanTambahanPage() {
                             </div>
                             <div className="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse">
                               <button type="submit" className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 sm:ml-3 sm:w-auto">
-                                {isAddModalOpen ? 'Simpan' : 'Simpan Perubahan'}
+                                {isEditing ? 'Simpan Perubahan' : 'Simpan'}
                               </button>
-                              <button type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" onClick={isAddModalOpen ? closeAddModal : closeEditModal}>
+                              <button type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" onClick={closeModal}>
                                 Batal
                               </button>
                             </div>
