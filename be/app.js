@@ -18,20 +18,20 @@ app.get('/', (req, res) => {
 
 // Jalankan server
 app.listen(PORT, async () => {
-    console.log(`Server berjalan di port ${PORT}.`);
+    console.log(`👀 Server berjalan di port ${PORT}.`);
     try {
         // Autentikasi koneksi ke database
         await db.sequelize.authenticate();
-        console.log('Koneksi ke database berhasil.');
+        console.log('🐳 Koneksi ke database berhasil.');
 
         // Sinkronisasi model dengan database
         // { alter: true } akan mencoba mencocokkan tabel dengan model
         // Ini akan menambahkan kolom baru, mengubah tipe data, dll. tapi tidak akan menghapus kolom yang tidak ada di model.
         // Hati-hati menggunakan ini di produksi!
         await db.sequelize.sync({ alter: true });
-        console.log('Semua model berhasil disinkronkan.');
+        console.log('🌐 Semua model berhasil disinkronkan.');
 
     } catch (error) {
-        console.error('Tidak dapat terhubung ke database:', error);
+        console.error('🆘 Tidak dapat terhubung ke database:', error);
     }
 });

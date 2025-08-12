@@ -1,5 +1,5 @@
 // file: models/index.js
-
+//ini adalah index.js untuk nama file .model.jd
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../config/db'); // Import koneksi sequelize dari config
 const fs = require('fs');
@@ -10,18 +10,17 @@ const db = {};
 // Baca semua file di direktori saat ini, filter file model, dan import
 fs.readdirSync(__dirname)
   .filter(file => {
-    // Memastikan file bukan direktori, bukan file index.js ini, dan berakhiran .js
-    return (file.indexOf('.') !== 0) && (file !== path.basename(__filename)) && (file.slice(-3) === '.js');
+    return (file.indexOf('.') !== 0) && (file !== path.basename(__filename)) && (file.slice(-9) === '.model.js');
   })
   .forEach(file => {
     const model = require(path.join(__dirname, file))(sequelize, DataTypes);
     db[model.name] = model;
-    console.log(`Model '${model.name}' berhasil dimuat dari ${file}`);
   });
 
 // --- DEFINISIKAN SEMUA RELASI ANTAR TABEL DI SINI ---
 
 // Relasi User dan Role (Many-to-Many)
+// Seorang user bisa punya banyak role, satu role bisa dimiliki banyak user
 const UserRoles = sequelize.define('user_roles', {}, { timestamps: false });
 db.User.belongsToMany(db.Role, { through: UserRoles, foreignKey: 'id_user' });
 db.Role.belongsToMany(db.User, { through: UserRoles, foreignKey: 'id_role' });
