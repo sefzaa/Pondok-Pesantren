@@ -5,39 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { Menu, Transition } from "@headlessui/react";
-import {
-  FiHome,
-  FiUserCheck,
-  FiAward,
-  FiAlertTriangle,
-  FiSend,
-  FiBookOpen,
-  FiFileText,
-  FiLogOut,
-} from "react-icons/fi";
+import { FiLogOut } from "react-icons/fi";
 
-// Menu item khusus untuk Wali Kamar
-const menuItems = [
-  {
-    group: "Main Menu",
-    items: [
-      { name: "Dashboard", icon: FiHome, href: "/wali-kamar" },
-      { name: "Absensi", icon: FiUserCheck, href: "/wali-kamar/absensi" },
-      { name: "Tahfidz", icon: FiBookOpen, href: "/wali-kamar/tahfidz" },
-      { name: "Hafalan", icon: FiBookOpen, href: "/wali-kamar/hafalan" },
-      { name: "Perizinan", icon: FiSend, href: "/wali-kamar/perizinan" },
-      { name: "Prestasi", icon: FiAward, href: "/wali-kamar/prestasi" },
-      {
-        name: "Pelanggaran",
-        icon: FiAlertTriangle,
-        href: "/wali-kamar/pelanggaran",
-      },
-      { name: "Rekap", icon: FiFileText, href: "/wali-kamar/rekap" },
-    ],
-  },
-];
-
-export default function SidebarWaliKamar({ setSidebarOpen }) {
+// Ini adalah komponen Sidebar yang bisa dipakai ulang
+// Ia menerima `userData` dan `menuItems` sebagai props
+export default function Sidebar({ userData, menuItems, setSidebarOpen }) {
   const pathname = usePathname();
 
   const handleLinkClick = () => {
@@ -47,24 +19,21 @@ export default function SidebarWaliKamar({ setSidebarOpen }) {
   };
 
   return (
-    // ▼▼▼ PERUBAHAN 1: Hapus `border-r` dan sesuaikan w/h agar fleksibel ▼▼▼
-    <aside className="bg-white w-full h-full flex flex-col">
-      {/* Header Sidebar dengan Profil Pengguna */}
-      {/* ▼▼▼ PERUBAHAN 2: Ganti `border-b` dengan `shadow-sm` ▼▼▼ */}
-      <div className="p-4 shadow-sm">
+    <aside className="bg-white w-64 min-h-screen flex flex-col shadow-md">
+      {/* Bagian Profil Pengguna (datanya dari props) */}
+      <div className="p-4">
         <Menu as="div" className="relative">
           <Menu.Button className="w-full flex items-center gap-3 text-left p-2 rounded-lg hover:bg-gray-100 transition-colors">
             <img
-              src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80"
+              src={userData.avatar || "https://via.placeholder.com/150"}
               alt="User avatar"
               className="h-10 w-10 rounded-full object-cover"
             />
             <div className="flex-1">
-              {/* Nama dan role disesuaikan */}
               <p className="font-semibold text-sm text-gray-800">
-                Sutomo Prayitno
+                {userData.name}
               </p>
-              <p className="text-xs text-gray-500">Wali Kamar</p>
+              <p className="text-xs text-gray-500">{userData.role}</p>
             </div>
           </Menu.Button>
           <Transition
@@ -76,14 +45,10 @@ export default function SidebarWaliKamar({ setSidebarOpen }) {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            {/* ▼▼▼ PERUBAHAN 3: Hapus `ring-1 ring-black ring-opacity-5` ▼▼▼ */}
-            <Menu.Items className="absolute z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg focus:outline-none">
+            <Menu.Items className="absolute z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div className="py-1">
                 <Menu.Item>
                   {({ active }) => (
-                    // <button onClick={() => console.log('Logout clicked!')} className={clsx('w-full text-left flex items-center gap-3 px-4 py-2 text-sm', active ? 'bg-red-100 text-red-700' : 'text-red-600' )}>
-                    //   <FiLogOut /> Logout
-                    // </button>
                     <a
                       href="/"
                       className={clsx(
@@ -101,7 +66,7 @@ export default function SidebarWaliKamar({ setSidebarOpen }) {
         </Menu>
       </div>
 
-      {/* Navigasi Menu */}
+      {/* Navigasi Menu (datanya dari props) */}
       <nav className="flex-1 p-4 space-y-4 overflow-y-auto">
         {menuItems.map((menuGroup) => (
           <div key={menuGroup.group}>
