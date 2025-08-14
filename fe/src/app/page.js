@@ -13,15 +13,47 @@ export default function Home() {
           priority
         />
         <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
+          <li className="tracking-[-.01em]">
+            <a href="/superadmin">Super Admin</a> 
           </li>
           <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
+            <a href="/adminAdm">Admin Administrasi</a> 
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/adminAsr">Admin Asrama</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/adminDg">Admin Disgiat</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/perizinan">Perizinan</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/staffdg">Staff Disgiat</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/staffpol">Staff Poliklinik</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/wali-kamar">Wali Kamar</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/kepas">Kepala Asrama</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/staffAdm">Staff Administrasi</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/staffkeu">Staff Keuangan</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/humas">Humas</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/ortu">Orang Tua</a>
+          </li>
+          <li className="tracking-[-.01em]">
+            <a href="/admpol">Admin Poliklinik</a>
           </li>
         </ol>
 

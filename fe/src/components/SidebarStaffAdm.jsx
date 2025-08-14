@@ -56,9 +56,12 @@ export default function SidebarStaffAdm({ setSidebarOpen }) {
                 <div className="py-1">
                     <Menu.Item>
                         {({ active }) => (
-                            <button onClick={() => console.log('Logout clicked!')} className={clsx('w-full text-left flex items-center gap-3 px-4 py-2 text-sm', active ? 'bg-red-100 text-red-700' : 'text-red-600' )}>
-                                <FiLogOut /> Logout
-                            </button>
+                            // <button onClick={() => console.log('Logout clicked!')} className={clsx('w-full text-left flex items-center gap-3 px-4 py-2 text-sm', active ? 'bg-red-100 text-red-700' : 'text-red-600' )}>
+                            //     <FiLogOut /> Logout
+                            // </button>
+                            <a href="/" className={clsx('w-full text-left flex items-center gap-3 px-4 py-2 text-sm', active ? 'bg-red-100 text-red-700' : 'text-red-600' )}>
+                                                  <FiLogOut /> Logout
+                                                </a>
                         )}
                     </Menu.Item>
                 </div>

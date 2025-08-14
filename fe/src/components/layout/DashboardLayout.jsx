@@ -1,17 +1,23 @@
+// Ubah nama file ini menjadi lebih generik, misalnya:
+// src/components/layout/DashboardLayout.jsx
+
 "use client";
 
 import { useState, Fragment, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { Dialog, Transition } from "@headlessui/react";
 import { FiMenu, FiX, FiSearch, FiFilter } from "react-icons/fi";
-import SidebarAdminAsr from "@/components/SidebarAdminAsr";
+// HAPUS: import SidebarAdminAsr dari sini karena akan dinamis
 
-export default function DashboardLayout({ children }) {
+// TERIMA prop baru: SidebarComponent
+export default function DashboardLayout({ children, SidebarComponent }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
   const pageTitle = useMemo(() => {
-    if (pathname === "/adminAsr") {
+    // Logika untuk judul halaman tetap sama, tidak perlu diubah
+    if (pathname === "/adminAsr" || pathname === "/superadmin") {
+      // Bisa ditambahkan kondisi lain
       return "Dashboard";
     }
     const lastSegment = pathname.split("/").pop();
@@ -20,6 +26,15 @@ export default function DashboardLayout({ children }) {
       .replace(/\b\w/g, (char) => char.toUpperCase());
     return title;
   }, [pathname]);
+
+  // Tambahkan pengecekan jika SidebarComponent tidak diberikan
+  if (!SidebarComponent) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Error: Komponen Sidebar tidak disediakan untuk layout ini.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,7 +45,7 @@ export default function DashboardLayout({ children }) {
           className="relative z-40 lg:hidden"
           onClose={setSidebarOpen}
         >
-          {/* ... (Tidak ada perubahan di sini, kode overlay tetap sama) ... */}
+          {/* ... Kode overlay tidak berubah ... */}
           <Transition.Child
             as={Fragment}
             enter="transition-opacity ease-linear duration-300"
@@ -42,6 +57,7 @@ export default function DashboardLayout({ children }) {
           >
             <div className="fixed inset-0 bg-gray-600 bg-opacity-75" />
           </Transition.Child>
+
           <div className="fixed inset-0 flex z-40">
             <Transition.Child
               as={Fragment}
@@ -53,9 +69,6 @@ export default function DashboardLayout({ children }) {
               leaveTo="-translate-x-full"
             >
               <Dialog.Panel className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
-                {/* Di sini sidebar mobile akan punya bayangan karena kita akan menambahkannya
-                  ke komponen SidebarAdminAsr atau container-nya di bawah.
-                */}
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-300"
@@ -76,7 +89,9 @@ export default function DashboardLayout({ children }) {
                     </button>
                   </div>
                 </Transition.Child>
-                <SidebarAdminAsr setSidebarOpen={setSidebarOpen} />
+
+                {/* ✅ UBAH: Gunakan SidebarComponent dari props */}
+                <SidebarComponent setSidebarOpen={setSidebarOpen} />
               </Dialog.Panel>
             </Transition.Child>
             <div className="flex-shrink-0 w-14" aria-hidden="true"></div>
@@ -85,18 +100,14 @@ export default function DashboardLayout({ children }) {
       </Transition.Root>
 
       {/* Static sidebar for desktop */}
-      {/* ▼▼▼ PERUBAHAN 1: Menambahkan shadow ke container sidebar ▼▼▼ */}
       <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 shadow-md">
-        {/* Shadow-md di atas akan menciptakan efek gradasi shade
-          antara sidebar dan konten utama.
-        */}
-        <SidebarAdminAsr />
+        {/* ✅ UBAH: Gunakan SidebarComponent dari props */}
+        <SidebarComponent />
       </div>
 
       <div className="lg:pl-64 flex flex-col flex-1">
-        {/* ▼▼▼ PERUBAHAN 2: Mengganti border-b dengan shadow-sm pada header ▼▼▼ */}
+        {/* ... Kode Header dan Main Content tetap sama ... */}
         <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow-sm items-center justify-between px-4 sm:px-6 lg:px-8">
-          {/* ▼▼▼ PERUBAHAN 3: Menghapus border-r pada tombol menu mobile ▼▼▼ */}
           <button
             type="button"
             className="px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden"
@@ -105,15 +116,9 @@ export default function DashboardLayout({ children }) {
             <span className="sr-only">Open sidebar</span>
             <FiMenu className="h-6 w-6" aria-hidden="true" />
           </button>
-
-          {/*
-            Div di bawah ini dibuat untuk memastikan ada jarak antara tombol menu (jika ada) 
-            dan judul di layar mobile, menggantikan peran border-r.
-            Kita gunakan 'w-full' dan 'justify-between' pada flex parent di atas.
-          */}
           <div className="flex-1 flex justify-between items-center ml-4 lg:ml-0">
             <h1 className="text-2xl font-bold text-gray-900">{pageTitle}</h1>
-            <div className="flex items-center gap-4">{/* Isinya kosong */}</div>
+            <div className="flex items-center gap-4"></div>
           </div>
         </header>
 
